@@ -160,9 +160,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGet("api", [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
-    (ClaimsPrincipal user) => user.Identity!.Name);
+    (ClaimsPrincipal user) =>
+{
+    return user.Identity!.Name;
+});
 
-app.MapMethods("callback/login/github", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
+/*
+app.MapMethods("callback/login/github2", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
 {
     // Resolve the claims extracted by OpenIddict from the userinfo response returned by GitHub.
     var result = await context.AuthenticateAsync(Providers.GitHub);
@@ -183,7 +187,9 @@ app.MapMethods("callback/login/github", [HttpMethods.Get, HttpMethods.Post], asy
     // authentication options shouldn't be used, a specific scheme can be specified here.
     return Results.SignIn(new ClaimsPrincipal(identity), properties);
 });
+*/
 
+/*
 app.MapMethods("authorize123", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
 {
     // Resolve the claims stored in the cookie created after the GitHub authentication dance.
@@ -217,5 +223,6 @@ app.MapMethods("authorize123", [HttpMethods.Get, HttpMethods.Post], async (HttpC
 
     return Results.SignIn(new ClaimsPrincipal(identity), properties: null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 });
+*/
 
 app.Run();
