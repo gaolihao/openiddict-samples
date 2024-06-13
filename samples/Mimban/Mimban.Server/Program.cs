@@ -159,7 +159,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("api", [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+app.MapGet("api1", [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     (ClaimsPrincipal user) =>
 {
     return user.Identity!.Name;

@@ -65,7 +65,7 @@ public partial class MainViewModel : IMainViewModel
 
         using var client = new HttpClient();
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:44383/api");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:44383/username");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         using var response = await client.SendAsync(request, cancellationToken);
