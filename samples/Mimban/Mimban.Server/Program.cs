@@ -23,6 +23,8 @@ builder.Services.AddQuartz(options =>
     options.UseInMemoryStore();
 });
 
+builder.Services.AddControllers();
+
 // Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
@@ -155,6 +157,8 @@ await using (var scope = app.Services.CreateAsyncScope())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers();
+
 app.MapGet("api", [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     (ClaimsPrincipal user) => user.Identity!.Name);
 
@@ -180,7 +184,7 @@ app.MapMethods("callback/login/github", [HttpMethods.Get, HttpMethods.Post], asy
     return Results.SignIn(new ClaimsPrincipal(identity), properties);
 });
 
-app.MapMethods("authorize", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
+app.MapMethods("authorize123", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
 {
     // Resolve the claims stored in the cookie created after the GitHub authentication dance.
     // If the principal cannot be found, trigger a new challenge to redirect the user to GitHub.

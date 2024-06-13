@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>$(NetCoreTargetFramework)-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Wpf"/>
+    <PackageReference Include="Fody" >
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="OpenIddict.Client" />
+    <PackageReference Include="PropertyChanged.Fody"  />	  
+	  <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.AppServices">
+	</PackageReference>
+    	  <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
+	</PackageReference>
+    	  <PackageReference Include="OpenIddict.Client.SystemIntegration">
+	</PackageReference>
+	<PackageReference Include="OpenIddict.Client.SystemNetHttp">
+	</PackageReference>
+            <PackageReference Include="OpenIddict.Client.WebIntegration">
+	</PackageReference>
+	<PackageReference Include="OpenIddict.EntityFrameworkCore">
+	</PackageReference>
+          </ItemGroup>
+
+</Project>

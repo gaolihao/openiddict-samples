@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using OpenIddict.Client;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using static OpenIddict.Abstractions.OpenIddictExceptions;
+using System.Security.Claims;
 
 namespace Mimban.Client;
 
@@ -50,6 +51,7 @@ public class InteractiveService : BackgroundService
             {
                 Nonce = result.Nonce
             });
+            // var v = response.Principal.FindFirst(ClaimTypes.Name)!.Value;
 
             Console.WriteLine("Your GitHub identifier is: {0}", await GetResourceAsync(
                 response.BackchannelAccessToken ?? response.FrontchannelAccessToken, stoppingToken));
