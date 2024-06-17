@@ -10,11 +10,10 @@
     <StackPanel>
         <TextBlock Text="{Binding MyProperty}" />
         <Button Command="{Binding IncrementCommand}" Content="Increment" />
-        <TextBlock Text="{Binding s}" />
-        <Button Command="{Binding ExtractCommand}" Content="Extract" />
-        <TextBlock Text="{Binding username}" />
+        <TextBlock Text="{Binding username}"/>
+        <TextBlock Text="{Binding responseTokenString}" />
         <Button Command="{Binding GetUsernameCommand}" Content="GetUsername" />
         <Button Command="{Binding AuthorizeCommand}" Content="Authorize" />
-        <Button Command="{Binding LoginCommand}" Content="Log in using GitHub" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="540" FontSize="20" />
+        <Button Command="{Binding LoginCommand}" Content="Log in using Microsoft" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="800" FontSize="20" />
     </StackPanel>
 </Window>

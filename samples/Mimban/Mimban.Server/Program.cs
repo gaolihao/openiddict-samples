@@ -34,6 +34,8 @@ builder.Services.AddDbContext<DbContext>(options =>
     options.UseOpenIddict();
 });
 
+var secret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
+
 builder.Services.AddOpenIddict()
 
     // Register the OpenIddict core components.
@@ -68,14 +70,15 @@ builder.Services.AddOpenIddict()
         //
         // Note: to mitigate mix-up attacks, it's recommended to use a unique redirection endpoint
         // URI per provider, unless all the registered providers support returning a special "iss"
-        // parameter containing their URL as part of authorization responses. For more information,
+        // parameter containing their URL as part of authorization responses. For more information, .SetAuthority("https://login.microsoftonline.com/zomp")
         // see https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.4.
+        
         options.UseWebProviders()
-               .AddGitHub(options =>
+               .AddMicrosoft(options =>
                {
-                   options.SetClientId("c4ade52327b01ddacff3")
-                          .SetClientSecret("da6bed851b75e317bf6b2cb67013679d9467c122")
-                          .SetRedirectUri("callback/login/github");
+                   options.SetClientId("776890c9-6376-42df-9fa3-1393af84e01b")
+                          .SetClientSecret(secret!)
+                          .SetRedirectUri("callback/login/microsoft");
                });
     })
 
@@ -115,6 +118,7 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore();
     });
 
+
 builder.Services.AddAuthorization()
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
@@ -148,7 +152,7 @@ await using (var scope = app.Services.CreateAsyncScope())
                 Permissions.Endpoints.Authorization,
                 Permissions.Endpoints.Token,
                 Permissions.GrantTypes.AuthorizationCode,
-                Permissions.ResponseTypes.Code
+                Permissions.ResponseTypes.Code,
             }
         });
     }
@@ -159,11 +163,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+/*
 app.MapGet("api1", [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     (ClaimsPrincipal user) =>
 {
     return user.Identity!.Name;
 });
+*/
 
 /*
 app.MapMethods("callback/login/github2", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>

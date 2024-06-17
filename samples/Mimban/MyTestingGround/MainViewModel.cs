@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Windows;
 using OpenIddict.Client;
 using System.Net.Http.Headers;
+using static OpenIddict.Client.OpenIddictClientModels;
 
 namespace MyTestingGround;
 
@@ -41,13 +42,7 @@ public partial class MainViewModel : IMainViewModel
     }
     
 
-    [RelayCommand]
-    private async Task GetUsernameAsync()
-    {
-        var results = await client.UsernameAsync();
-        username = results.Value;
-    }
-
+    
 
     [RelayCommand]
     private async Task AuthorizeAsync()
@@ -58,34 +53,24 @@ public partial class MainViewModel : IMainViewModel
     }
 
     */
+
+
     public string username { get; set; } = "";
+    public string responseTokenString { get; set; } = "";
 
-    private async Task<string> GetResourceAsync(string token, CancellationToken cancellationToken = default)
+    private async Task<string> GetResourceAsync(string token, string resource, CancellationToken cancellationToken = default)
     {
-
         using var client = new HttpClient();
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:44383/username");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:44383/userinfo/" + resource);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         using var response = await client.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadAsStringAsync(cancellationToken);
-
-
-        /*
-        using var client = new HttpClient();
-
-        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:5232/username");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        using var response = await client.SendAsync(request, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        return await response.Content.ReadAsStringAsync(cancellationToken);
-        */
     }
+
 
     [RelayCommand]
     private async Task LoginAsync()
@@ -111,25 +96,30 @@ public partial class MainViewModel : IMainViewModel
                 }));
 
                 var responseToken = response.BackchannelAccessToken ?? response.FrontchannelAccessToken;
+                
                 if (responseToken != null)
                 {
-                    var token = await GetResourceAsync(responseToken, source.Token);
+                    var name= await GetResourceAsync(responseToken, "username", source.Token);
+                    var usernameId = await GetResourceAsync(responseToken, "usernameid", source.Token);
+                    var email = await GetResourceAsync(responseToken, "email", source.Token);
                     // var v = response.Principal.FindFirst(ClaimTypes.Name)!.Value;
-                    username = ($"Your GitHub identifier is: {token}");
+                    username = $"Your Username is: {name} \n Your Microsoft identifier is: {usernameId} \n Your Email is: {email}";
+                    responseTokenString = $"You token is: {responseToken.ToString()}";
 
                 }
             }
 
             catch (OperationCanceledException)
             {
-                MessageBox.Show("The authentication process was aborted.",
-                "Authentication timed out", MessageBoxButton.OK, MessageBoxImage.Warning);
+                username = ("The authentication process was aborted.");
+               
+                   //"Authentication timed out", MessageBoxButton.OK, MessageBoxImage.Warning)
             }
 
             catch
             {
-                MessageBox.Show("An error occurred while trying to authenticate the user.",
-                    "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                username = "An error occurred while trying to authenticate the user.";
+                    //"Authentication failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

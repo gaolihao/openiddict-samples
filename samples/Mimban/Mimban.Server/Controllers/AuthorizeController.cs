@@ -43,7 +43,8 @@ public class AuthorizeController(ILogger<AuthorizeController> logger) : Controll
 
         var context = HttpContext;
 
-        var principal = (await context.AuthenticateAsync())?.Principal;
+        var result = (await context.AuthenticateAsync());
+        var principal = result?.Principal;
         if (principal is null)
         {
             var properties = new AuthenticationProperties
@@ -51,9 +52,12 @@ public class AuthorizeController(ILogger<AuthorizeController> logger) : Controll
                 RedirectUri = context.Request.GetEncodedUrl()
             };
 
-            return Results.Challenge(properties, [Providers.GitHub]);
+            var r = Results.Challenge(properties, [Providers.Microsoft]);
+            return r;
         }
 
+        var name = principal.FindFirst(ClaimTypes.Name)!.Value;
+        var email = principal.FindFirst(ClaimTypes.Email)!.Value;
         var identifier = principal.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
         // Create the claims-based identity that will be used by OpenIddict to generate tokens.
@@ -64,8 +68,9 @@ public class AuthorizeController(ILogger<AuthorizeController> logger) : Controll
 
         // Import a few select claims from the identity stored in the local cookie.
         identity.AddClaim(new Claim(Claims.Subject, identifier));
-        identity.AddClaim(new Claim(Claims.Name, identifier).SetDestinations(Destinations.AccessToken));
+        identity.AddClaim(new Claim(Claims.Name, name).SetDestinations(Destinations.AccessToken));
         identity.AddClaim(new Claim(Claims.PreferredUsername, identifier).SetDestinations(Destinations.AccessToken));
+        identity.AddClaim(new Claim(Claims.Email, email).SetDestinations(Destinations.AccessToken));
 
         return Results.SignIn(new ClaimsPrincipal(identity), properties: null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }

@@ -8,12 +8,13 @@ using OpenIddict.Server.AspNetCore;
 using Microsoft.AspNetCore.Http.Extensions;
 using OpenIddict.Abstractions;
 using Polly;
+using Microsoft.AspNetCore.Identity;
 
 namespace Mimban.Server.Controllers;
 
 [ApiController]
 //[Route("[controller]")]
-[Route("callback/login/github")]
+[Route("callback/login/microsoft")]
 public class AuthenticateController(ILogger<AuthorizeController> logger) : ControllerBase
 {
 
@@ -23,14 +24,27 @@ public class AuthenticateController(ILogger<AuthorizeController> logger) : Contr
     public async Task<IResult> Get()
     {
         var context = HttpContext;
-        var result = await context.AuthenticateAsync(Providers.GitHub);
+        var result = await context.AuthenticateAsync(Providers.Microsoft);
 
         var identity = new ClaimsIdentity(
             authenticationType: "ExternalLogin",
             nameType: ClaimTypes.Name,
-            roleType: ClaimTypes.Role);
+        roleType: ClaimTypes.Role);
 
-        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, result.Principal!.FindFirst("id")!.Value));
+        var n = result.Principal!.FindFirst("Name")!.Value;
+        var e = result.Principal!.GetClaim(ClaimTypes.Email) ?? "";
+        //var e1 = result.Principal!.GetClaim(ClaimTypes.Expiration) ?? "";
+        //var e2 = result.Principal!.GetClaim(ClaimTypes.UserData) ?? "";
+        //var e3 = result.Principal!.GetClaim(ClaimTypes.AuthenticationMethod) ?? "";
+        //var e4 = result.Principal!.GetClaim(ClaimTypes.Authentication) ?? "";
+        //var e5 = result.Principal!.GetClaim(ClaimTypes.DateOfBirth) ?? "";
+        var e6 = result.Principal!.GetClaim(ClaimTypes.NameIdentifier) ?? "";
+        //var e1 = result.Principal!.GetClaim(ClaimTypes.Country);
+        //var e2 = result.Principal!.GetClaim(ClaimTypes.CookiePath);
+        //var e3 = result.Principal!.GetClaim(ClaimTypes.Sid);
+        identity.AddClaim(new Claim(ClaimTypes.Name, n));
+        identity.AddClaim(new Claim(ClaimTypes.Email, e));
+        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, e6));
 
         var properties = new AuthenticationProperties
         {
