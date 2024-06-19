@@ -1,18 +1,11 @@
 ﻿using Microsoft.Extensions.Hosting;
-using System.Configuration;
-using System.Data;
-using System;
 using System.IO;
 using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Client;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Windows.Navigation;
 
 namespace MyTestingGround;
 

@@ -1,14 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using PropertyChanged;
-using System.ComponentModel;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Security.Claims;
-using System.Windows;
 using OpenIddict.Client;
 using System.Net.Http.Headers;
-using static OpenIddict.Client.OpenIddictClientModels;
 
 namespace MyTestingGround;
 

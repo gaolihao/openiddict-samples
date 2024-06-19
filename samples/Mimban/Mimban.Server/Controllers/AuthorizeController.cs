@@ -7,12 +7,13 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 using OpenIddict.Server.AspNetCore;
 using Microsoft.AspNetCore.Http.Extensions;
 using OpenIddict.Abstractions;
+using Microsoft.AspNetCore;
 
 namespace Mimban.Server.Controllers;
 
 [ApiController]
 //[Route("[controller]")]
-[Route("authorize")]
+[Route("authorize_microsoft")]
 public class AuthorizeController(ILogger<AuthorizeController> logger) : ControllerBase
 {
     private static readonly string[] Summaries =
@@ -25,21 +26,8 @@ public class AuthorizeController(ILogger<AuthorizeController> logger) : Controll
     [HttpGet, HttpPost]
     public async Task<IResult> Get()
     {
-        /*
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        })
-        .ToArray();
-        */
-
-        // Resolve the claims stored in the cookie created after the GitHub authentication dance.
-        // If the principal cannot be found, trigger a new challenge to redirect the user to GitHub.
-        //
-        // For scenarios where the default authentication handler configured in the ASP.NET Core
-        // authentication options shouldn't be used, a specific scheme can be specified here.
+        var request = HttpContext.GetOpenIddictServerRequest() ??
+            throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
         var context = HttpContext;
 

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using OpenIddict.Abstractions;
 using Polly;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore;
 
 namespace Mimban.Server.Controllers;
 
@@ -23,6 +24,7 @@ public class AuthenticateController(ILogger<AuthorizeController> logger) : Contr
     [HttpGet, HttpPost]
     public async Task<IResult> Get()
     {
+
         var context = HttpContext;
         var result = await context.AuthenticateAsync(Providers.Microsoft);
 

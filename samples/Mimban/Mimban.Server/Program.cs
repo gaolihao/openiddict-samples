@@ -1,18 +1,47 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
+
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
-using OpenIddict.Server.AspNetCore;
-using OpenIddict.Validation.AspNetCore;
+using Polly;
 using Quartz;
+using System.Data;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Mimban.Server.Data;
+using Mimban.Server.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    // Configure the context to use sqlite.
+    options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-balosar-server.sqlite3")}");
+
+    // Register the entity sets needed by OpenIddict.
+    // Note: use the generic overload if you need
+    // to replace the default OpenIddict entities.
+    options.UseOpenIddict();
+});
+
+// Register the Identity services.
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+/*
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<DbContext>();
+*/
+
+//            .AddDefaultTokenProviders();
+
+
+/*
+services.AddIdentity<IdentityUser, Role>().AddEntityFrameworkStores<Context>();
+*/
 
 // OpenIddict offers native integration with Quartz.NET to perform scheduled tasks
 // (like pruning orphaned authorizations/tokens from the database) at regular intervals.
@@ -27,6 +56,7 @@ builder.Services.AddControllers();
 
 // Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
 
 builder.Services.AddDbContext<DbContext>(options =>
 {
@@ -86,7 +116,7 @@ builder.Services.AddOpenIddict()
     .AddServer(options =>
     {
         // Enable the authorization and token endpoints.
-        options.SetAuthorizationEndpointUris("authorize")
+        options.SetAuthorizationEndpointUris("authorize_microsoft")
                .SetTokenEndpointUris("token");
 
         // Note: this sample only uses the authorization code flow but you can enable
@@ -97,6 +127,14 @@ builder.Services.AddOpenIddict()
         options.AddDevelopmentEncryptionCertificate()
                .AddDevelopmentSigningCertificate();
 
+        options.SetTokenEndpointUris("/connect/token");
+
+        // Enable the password flow.
+        options.AllowPasswordFlow();
+
+        // Accept anonymous clients (i.e clients that don't send a client_id).
+        options.AcceptAnonymousClients();
+
         // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
         //
         // Note: unlike other samples, this sample doesn't use token endpoint pass-through
@@ -105,7 +143,8 @@ builder.Services.AddOpenIddict()
         // resolved from the authorization code to produce access and identity tokens.
         //
         options.UseAspNetCore()
-               .EnableAuthorizationEndpointPassthrough();
+               .EnableAuthorizationEndpointPassthrough()
+               .DisableTransportSecurityRequirement();
     })
 
     // Register the OpenIddict validation components.
@@ -122,6 +161,18 @@ builder.Services.AddOpenIddict()
 builder.Services.AddAuthorization()
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+});
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
