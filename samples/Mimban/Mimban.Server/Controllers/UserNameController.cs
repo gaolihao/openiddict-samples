@@ -15,6 +15,7 @@ public record Username(string value);
 
 [ApiController]
 //[Route("[controller]")]
+[Authorize(Roles = "Signin")]
 [Route("userinfo")]
 public class UserNameController : Controller
 {

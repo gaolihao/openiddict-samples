@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Mimban.Server.Data;
 using Mimban.Server.Models;
+using Mimban.Server;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     // Configure the context to use sqlite.
-    options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-balosar-server.sqlite3")}");
+    options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-lalala3-server.sqlite3")}");
 
     // Register the entity sets needed by OpenIddict.
     // Note: use the generic overload if you need
@@ -30,6 +31,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+// This replaces the default `SignInManager` with my custom one.
+//builder.Services.AddScoped<SignInManager<ApplicationUser>, ExternalClaimsSignInManager<ApplicationUser>>();
 
 /*
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
@@ -57,12 +61,13 @@ builder.Services.AddControllers();
 // Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
-
+/*
 builder.Services.AddDbContext<DbContext>(options =>
 {
     options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-mimban-server.sqlite3")}");
     options.UseOpenIddict();
 });
+*/
 
 var secret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
 
@@ -72,7 +77,7 @@ builder.Services.AddOpenIddict()
     .AddCore(options =>
     {
         options.UseEntityFrameworkCore()
-               .UseDbContext<DbContext>();
+               .UseDbContext<ApplicationDbContext>();
     })
 
     // Register the OpenIddict client components.
@@ -109,6 +114,7 @@ builder.Services.AddOpenIddict()
                    options.SetClientId("776890c9-6376-42df-9fa3-1393af84e01b")
                           .SetClientSecret(secret!)
                           .SetRedirectUri("callback/login/microsoft");
+                          //.SetTenant("consumers");
                });
     })
 
@@ -127,7 +133,7 @@ builder.Services.AddOpenIddict()
         options.AddDevelopmentEncryptionCertificate()
                .AddDevelopmentSigningCertificate();
 
-        options.SetTokenEndpointUris("/connect/token");
+        //options.SetTokenEndpointUris("/connect/token");
 
         // Enable the password flow.
         options.AllowPasswordFlow();
@@ -182,7 +188,7 @@ app.UseHttpsRedirection();
 // Note: in a real world application, this step should be part of a setup script.
 await using (var scope = app.Services.CreateAsyncScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<DbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await context.Database.EnsureCreatedAsync();
 
     var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
@@ -209,9 +215,13 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
+app.UseBlazorFrameworkFiles();
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllers();
 
 /*

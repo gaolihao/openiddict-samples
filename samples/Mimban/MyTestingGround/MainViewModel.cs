@@ -70,12 +70,10 @@ public partial class MainViewModel : IMainViewModel
     private async Task LoginAsync()
     {
         // Disable the login button to prevent concurrent authentication operations.
-        try
-        {
+
             using var source = new CancellationTokenSource(delay: TimeSpan.FromSeconds(90));
 
-            try
-            {
+
                 // Ask OpenIddict to initiate the authentication flow (typically, by starting the system browser).
                 var result = await Service.ChallengeInteractivelyAsync(new()
                 {
@@ -101,27 +99,9 @@ public partial class MainViewModel : IMainViewModel
                     responseTokenString = $"You token is: {responseToken.ToString()}";
 
                 }
-            }
+            
 
-            catch (OperationCanceledException)
-            {
-                username = ("The authentication process was aborted.");
-               
-                   //"Authentication timed out", MessageBoxButton.OK, MessageBoxImage.Warning)
-            }
 
-            catch
-            {
-                username = "An error occurred while trying to authenticate the user.";
-                    //"Authentication failed", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        finally
-        {
-            // Re-enable the login button to allow starting a new authentication operation.
-            // LoginButton.IsEnabled = true;
-        }
     }
 
 }

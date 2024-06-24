@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Client.AspNetCore;
@@ -102,6 +103,8 @@ public class AuthenticationController : Controller
             // Preserve the access and refresh tokens returned in the token response, if available.
             OpenIddictClientAspNetCoreConstants.Tokens.BackchannelAccessToken or
             OpenIddictClientAspNetCoreConstants.Tokens.RefreshToken));
+
+        
 
         // Ask the default sign-in handler to return a new cookie and redirect the
         // user agent to the return URL stored in the authentication properties.
