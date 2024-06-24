@@ -18,28 +18,56 @@ public class Worker : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await using var scope = _serviceProvider.CreateAsyncScope();
+        // Create a new application registration matching the values configured in Mimban.Client.
+        // Note: in a real world application, this step should be part of a setup script.
+        await using (var scope = _serviceProvider.CreateAsyncScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await context.Database.EnsureCreatedAsync();
 
+            var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+
+            if (await manager.FindByClientIdAsync("console_app") == null)
+            {
+                await manager.CreateAsync(new OpenIddictApplicationDescriptor
+                {
+                    ApplicationType = ApplicationTypes.Native,
+                    ClientId = "console_app",
+                    ClientType = ClientTypes.Public,
+                    RedirectUris =
+            {
+                new Uri("http://localhost/")
+            },
+                    Permissions =
+            {
+                Permissions.Endpoints.Authorization,
+                Permissions.Endpoints.Token,
+                Permissions.GrantTypes.AuthorizationCode,
+                Permissions.ResponseTypes.Code,
+            }
+                });
+            }
+        }
+
+        // await using var scope = _serviceProvider.CreateAsyncScope();
+
+        /*
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await context.Database.EnsureCreatedAsync();
 
         var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
-        if (await manager.FindByClientIdAsync("balosar-blazor-client") is null)
+        if (await manager.FindByClientIdAsync("console_app") is null)
         {
             await manager.CreateAsync(new OpenIddictApplicationDescriptor
             {
-                ClientId = "balosar-blazor-client",
+                ClientId = "console_app",
                 ConsentType = ConsentTypes.Explicit,
                 DisplayName = "Blazor client application",
                 ClientType = ClientTypes.Public,
-                PostLogoutRedirectUris =
-                {
-                    new Uri("https://localhost:44310/authentication/logout-callback")
-                },
                 RedirectUris =
                 {
-                    new Uri("https://localhost:44310/authentication/login-callback")
+                    new Uri("http://localhost/")
                 },
                 Permissions =
                 {
@@ -58,7 +86,9 @@ public class Worker : IHostedService
                     Requirements.Features.ProofKeyForCodeExchange
                 }
             });
+            
         }
+        */
 
     }
 

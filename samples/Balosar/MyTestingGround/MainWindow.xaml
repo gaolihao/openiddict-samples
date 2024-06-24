@@ -1,0 +1,19 @@
+﻿<Window x:Class="MyTestingGround.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyTestingGround" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
+        DataContext="{Binding Main, Source={StaticResource Locator}}"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="500" Width="800">
+    <StackPanel>
+        <TextBlock Text="{Binding MyProperty}" />
+        <Button Command="{Binding IncrementCommand}" Content="Increment" />
+        <TextBlock Text="{Binding username}"/>
+        <TextBlock Text="{Binding responseTokenString}" />
+        <Button Command="{Binding GetUsernameCommand}" Content="GetUsername" />
+        <Button Command="{Binding AuthorizeCommand}" Content="Authorize" />
+        <Button Command="{Binding LoginCommand}" Content="Log in using Microsoft" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="800" FontSize="20" />
+    </StackPanel>
+</Window>

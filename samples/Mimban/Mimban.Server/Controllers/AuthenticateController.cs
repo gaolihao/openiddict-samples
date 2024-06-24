@@ -18,7 +18,7 @@ namespace Mimban.Server.Controllers;
 
 [ApiController]
 //[Route("[controller]")]
-[Route("callback/login/microsoft")]
+[Route("callback111/login/microsoft")]
 public class AuthenticateController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> userManager;

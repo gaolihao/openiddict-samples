@@ -140,6 +140,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sorgan.Console.Client", "sa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTestingGround", "samples\Mimban\MyTestingGround\MyTestingGround.csproj", "{E501F8DF-7D0C-4CF3-A176-A92A8B49D852}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTestingGround", "samples\Balosar\MyTestingGround\MyTestingGround.csproj", "{27221BE4-9C67-427B-A224-6D492DCC63E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -302,6 +304,10 @@ Global
 		{E501F8DF-7D0C-4CF3-A176-A92A8B49D852}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E501F8DF-7D0C-4CF3-A176-A92A8B49D852}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E501F8DF-7D0C-4CF3-A176-A92A8B49D852}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27221BE4-9C67-427B-A224-6D492DCC63E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27221BE4-9C67-427B-A224-6D492DCC63E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27221BE4-9C67-427B-A224-6D492DCC63E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27221BE4-9C67-427B-A224-6D492DCC63E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -361,6 +367,7 @@ Global
 		{C392496F-B3E4-4B7C-97F3-66EB13206985} = {F2076FDE-06F9-441B-938E-97953A3C0906}
 		{A2B093AC-6044-467E-B94F-936343DCD11B} = {F2076FDE-06F9-441B-938E-97953A3C0906}
 		{E501F8DF-7D0C-4CF3-A176-A92A8B49D852} = {E61EDAE1-AFBE-4B53-9A4B-E4BE2A609C45}
+		{27221BE4-9C67-427B-A224-6D492DCC63E8} = {277544C8-FE91-41EE-81A8-12FE99BA9F60}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F3ECDD26-F40D-4AB4-BC48-8DF143F98FAE}

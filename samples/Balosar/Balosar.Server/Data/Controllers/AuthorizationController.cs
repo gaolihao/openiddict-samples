@@ -17,11 +17,15 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Polly;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Balosar.Server.Controllers;
 
-public class AuthorizationController : Controller
+[ApiController]
+public class AuthorizationController : ControllerBase
 {
     private readonly IOpenIddictApplicationManager _applicationManager;
     private readonly IOpenIddictAuthorizationManager _authorizationManager;
@@ -51,6 +55,8 @@ public class AuthorizationController : Controller
         var request = HttpContext.GetOpenIddictServerRequest() ??
             throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
+        var context = HttpContext;
+
         // Try to retrieve the user principal stored in the authentication cookie and redirect
         // the user agent to the login page (or to an external provider) in the following cases:
         //
@@ -61,6 +67,8 @@ public class AuthorizationController : Controller
         // For scenarios where the default authentication handler configured in the ASP.NET Core
         // authentication options shouldn't be used, a specific scheme can be specified here.
         var result = await HttpContext.AuthenticateAsync();
+
+        /*
         if (result == null || !result.Succeeded || request.HasPrompt(Prompts.Login) ||
            (request.MaxAge != null && result.Properties?.IssuedUtc != null &&
             DateTimeOffset.UtcNow - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value)))
@@ -90,11 +98,26 @@ public class AuthorizationController : Controller
 
             // For scenarios where the default challenge handler configured in the ASP.NET Core
             // authentication options shouldn't be used, a specific scheme can be specified here.
+            var redirect = Request.PathBase + Request.Path + QueryString.Create(parameters);
             return Challenge(new AuthenticationProperties
             {
-                RedirectUri = Request.PathBase + Request.Path + QueryString.Create(parameters)
+                RedirectUri = redirect,
             });
         }
+        */
+
+        var principal = result?.Principal;
+        if (principal is null)
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = context.Request.GetEncodedUrl()
+            };
+
+            var r = Results.Challenge(properties, [Providers.Microsoft]);
+            return r;
+        }
+
 
         // Retrieve the profile of the logged in user.
         var user = await _userManager.GetUserAsync(result.Principal) ??

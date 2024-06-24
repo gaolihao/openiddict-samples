@@ -1,7 +1,9 @@
+using System;
 using System.IO;
 using Balosar.Server.Data;
 using Balosar.Server.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,12 +21,13 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             // Configure the context to use sqlite.
-            options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-balosar-server.sqlite3")}");
+            options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-balosar2-server.sqlite3")}");
 
             // Register the entity sets needed by OpenIddict.
             // Note: use the generic overload if you need
@@ -49,6 +52,8 @@ public class Startup
 
         // Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
+        var secret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
 
         services.AddOpenIddict()
 
@@ -95,9 +100,12 @@ public class Startup
                 options.UseWebProviders()
                        .AddGitHub(options =>
                        {
-                           options.SetClientId("c4ade52327b01ddacff3")
-                                  .SetClientSecret("da6bed851b75e317bf6b2cb67013679d9467c122")
-                                  .SetRedirectUri("callback/login/github");
+                           //options.SetClientId("c4ade52327b01ddacff3")
+                           //       .SetClientSecret("da6bed851b75e317bf6b2cb67013679d9467c122")
+                           //       .SetRedirectUri("callback/login/github");
+                           options.SetClientId("776890c9-6376-42df-9fa3-1393af84e01b")
+                          .SetClientSecret(secret!)
+                          .SetRedirectUri("callback/login/microsoft");
                        });
             })
 
@@ -174,7 +182,6 @@ public class Startup
         {
             endpoints.MapRazorPages();
             endpoints.MapControllers();
-            endpoints.MapFallbackToFile("index.html");
         });
     }
 }
